@@ -1,0 +1,16 @@
+C:\Projects\GymTracker\GymTracker.Application\bin\Debug\net10.0\GymTracker.Application.deps.json
+C:\Projects\GymTracker\GymTracker.Application\bin\Debug\net10.0\GymTracker.Application.dll
+C:\Projects\GymTracker\GymTracker.Application\bin\Debug\net10.0\GymTracker.Application.pdb
+C:\Projects\GymTracker\GymTracker.Application\bin\Debug\net10.0\GymTracker.Domain.dll
+C:\Projects\GymTracker\GymTracker.Application\bin\Debug\net10.0\GymTracker.Domain.pdb
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\GymTracker.Application.csproj.AssemblyReference.cache
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\GymTracker.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\GymTracker.Application.AssemblyInfoInputs.cache
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\GymTracker.Application.AssemblyInfo.cs
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\GymTracker.Application.csproj.CoreCompileInputs.cache
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\GymTracker.Application.sourcelink.json
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\GymTrack.F70D1A1E.Up2Date
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\GymTracker.Application.dll
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\refint\GymTracker.Application.dll
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\GymTracker.Application.pdb
+C:\Projects\GymTracker\GymTracker.Application\obj\Debug\net10.0\ref\GymTracker.Application.dll
