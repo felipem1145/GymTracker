@@ -1,9 +1,10 @@
+using GymTracker.Application.Common.Interfaces;
 using GymTracker.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymTracker.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -32,6 +33,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.Email).HasColumnName("email");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
+
+            entity.HasQueryFilter(e => !e.IsDeleted);
         });
 
         // ── Routine ───────────────────────────────────────────
@@ -45,6 +50,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
+
+            entity.HasQueryFilter(e => !e.IsDeleted);
 
             entity.HasOne(e => e.User)
                   .WithMany(u => u.Routines)
@@ -61,6 +70,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Name).HasColumnName("name");
             entity.Property(e => e.TargetMuscle).HasColumnName("target_muscle");
+            entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+            entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
+
+            entity.HasQueryFilter(e => !e.IsDeleted);
         });
 
         // ── RoutineExercise (join table) ──────────────────────

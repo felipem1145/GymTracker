@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GymTracker.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8792342889b9bd70448dc2fd27e9e0975fd7a294")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7e69129b7d55f83a847be12e8bed3b78bf8a7998")]
 [assembly: System.Reflection.AssemblyProductAttribute("GymTracker.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GymTracker.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

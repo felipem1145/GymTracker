@@ -6,6 +6,8 @@ public class Routine
     public Guid UserId { get; set; }
     public string Name { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     // Navigation properties
     public virtual User? User { get; set; }
