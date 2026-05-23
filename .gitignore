@@ -1,4 +1,6 @@
-# Build output
+# ============================================================
+# BUILD OUTPUTS — .NET
+# ============================================================
 [Bb]in/
 [Oo]bj/
 [Dd]ebug/
@@ -7,7 +9,22 @@
 artifacts/
 TestResults/
 
-# .NET tooling
+# ============================================================
+# BUILD OUTPUTS — Frontend
+# ============================================================
+dist/
+dist-ssr/
+coverage/
+
+# ============================================================
+# DEPENDENCIES
+# ============================================================
+node_modules/
+packages/
+
+# ============================================================
+# .NET TOOLING
+# ============================================================
 *.rsuser
 *.user
 *.suo
@@ -16,35 +33,66 @@ TestResults/
 *.cache
 *.pdb
 
-# Visual Studio / VS Code
-.vs/
-.vscode/
+# ============================================================
+# NUGET
+# ============================================================
+*.nupkg
+*.snupkg
 
-# JetBrains Rider / ReSharper
+# ============================================================
+# TYPESCRIPT
+# ============================================================
+*.tsbuildinfo
+
+# ============================================================
+# LINTER / FORMATTER CACHES
+# ============================================================
+.eslintcache
+.oxlintcache
+.stylelintcache
+.prettiercache
+
+# ============================================================
+# EDITORS — Visual Studio / VS Code
+# ============================================================
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ============================================================
+# EDITORS — JetBrains / ReSharper
+# ============================================================
 .idea/
 _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
 
-# NuGet
-packages/
-*.nupkg
-*.snupkg
-
-# Logs
+# ============================================================
+# LOGS
+# ============================================================
 *.log
 logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Local environment files
+# ============================================================
+# ENVIRONMENT & SECRETS
+# ============================================================
 .env
 .env.*
-
-# Generated local secrets or certificates
+!.env.example
 secrets.json
+appsettings.Development.json
 *.pfx
 *.publishsettings
 
-# OS files
+# ============================================================
+# OS FILES
+# ============================================================
 .DS_Store
 Thumbs.db
 desktop.ini
+
