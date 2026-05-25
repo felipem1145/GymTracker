@@ -42,8 +42,8 @@
         <span
           class="flex-shrink-0 ml-3 px-3 py-1 rounded-full text-xs font-semibold"
           :style="{
-            backgroundColor: exercise.muscleGroupColor + '20',
-            color: exercise.muscleGroupColor,
+            backgroundColor: getMuscleGroupColor(exercise.muscleGroup) + '20',
+            color: getMuscleGroupColor(exercise.muscleGroup),
           }"
         >
           {{ exercise.muscleGroup }}
@@ -66,10 +66,30 @@
 import { Search, X, Target, SearchX } from '@lucide/vue'
 
 interface Exercise {
-  id: number
+  id: string
   name: string
   muscleGroup: string
-  muscleGroupColor: string
+}
+
+function getMuscleGroupColor(muscleGroup: string): string {
+  const normalized = muscleGroup.trim().toLowerCase()
+
+  const colorMap: Record<string, string> = {
+    chest: '#ef4444',
+    back: '#3b82f6',
+    shoulders: '#f59e0b',
+    arms: '#22c55e',
+    biceps: '#22c55e',
+    triceps: '#22c55e',
+    legs: '#8b5cf6',
+    quads: '#8b5cf6',
+    hamstrings: '#8b5cf6',
+    glutes: '#8b5cf6',
+    calves: '#8b5cf6',
+    core: '#ec4899',
+  }
+
+  return colorMap[normalized] ?? '#a1a1aa'
 }
 
 defineProps<{

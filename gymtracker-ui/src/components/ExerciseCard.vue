@@ -11,10 +11,20 @@
       </span>
     </div>
 
-    <!-- Last Time Card -->
-    <div v-if="lastPerformance.length > 0" class="bg-secondary/50 rounded-lg p-4 border border-border/50">
-      <p class="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-2">Last Time:</p>
-      <div class="flex flex-wrap gap-4">
+    <!-- Last Time & PR Card -->
+    <div
+      v-if="lastPerformance.length > 0 || personalRecord"
+      class="bg-secondary/50 rounded-lg p-4 border border-border/50"
+    >
+      <div class="mb-3 flex items-center justify-between gap-2">
+        <p class="text-xs text-muted-foreground font-medium uppercase tracking-wider">Last Time:</p>
+        <span class="inline-flex items-center gap-1 rounded-full border border-amber-300/50 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-700">
+          <Trophy class="h-3.5 w-3.5" />
+          PR: {{ personalRecord ? `${personalRecord.weight} kg x ${personalRecord.reps}` : '--' }}
+        </span>
+      </div>
+
+      <div v-if="lastPerformance.length > 0" class="flex flex-wrap gap-4">
         <div v-for="(perf, idx) in lastPerformance" :key="idx" class="flex-1 min-w-max">
           <p class="text-xs text-muted-foreground">S{{ perf.set }}</p>
           <p class="text-sm font-semibold text-foreground">
@@ -22,16 +32,20 @@
           </p>
         </div>
       </div>
+
+      <p v-else class="text-sm text-muted-foreground">No previous records for this exercise yet.</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Trophy } from '@lucide/vue'
+
 interface Exercise {
   id: string
   name: string
   muscleGroup: string
-  icon: string
+  icon?: string
 }
 
 interface PerformanceData {
@@ -40,8 +54,14 @@ interface PerformanceData {
   reps?: number
 }
 
+interface PersonalRecord {
+  weight: number
+  reps: number
+}
+
 defineProps<{
   exercise: Exercise
   lastPerformance: PerformanceData[]
+  personalRecord?: PersonalRecord | null
 }>()
 </script>

@@ -11,7 +11,6 @@
       <!-- Action Buttons -->
       <ActionButtons
         @start-workout="handleStartWorkout"
-        @choose-routine="handleChooseRoutine"
       />
 
       <!-- Workout History -->
@@ -27,8 +26,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { MOCK_AUTH_USER } from '@/constants/mockUser'
+import { useWorkoutStore } from '@/stores/workout'
 import DashboardHeader from '@/components/DashboardHeader.vue'
 import QuickStats from '@/components/QuickStats.vue'
 import ActionButtons from '@/components/ActionButtons.vue'
@@ -36,8 +37,15 @@ import WorkoutHistory from '@/components/WorkoutHistory.vue'
 import BottomNav from '@/components/BottomNav.vue'
 
 const router = useRouter()
+const workoutStore = useWorkoutStore()
 
-const userName = ref('Alex')
+onMounted(() => {
+  if (workoutStore.activeSession) {
+    router.push('/workout')
+  }
+})
+
+const userName = ref(MOCK_AUTH_USER.name)
 const currentStreak = ref(12)
 
 const weeklyStats = ref({
@@ -46,64 +54,23 @@ const weeklyStats = ref({
   duration: 285,
 })
 
-const workoutHistory = ref([
-  {
-    id: '1',
-    name: 'Push Day',
-    date: new Date(2026, 4, 22),
-    dayOfWeek: 'Thursday',
-    totalWeight: 5420,
-    duration: 62,
-    exercises: 6,
-    icon: 'dumbbell',
-  },
-  {
-    id: '2',
-    name: 'Leg Day',
-    date: new Date(2026, 4, 20),
-    dayOfWeek: 'Tuesday',
-    totalWeight: 8750,
-    duration: 75,
-    exercises: 5,
-    icon: 'footprints',
-  },
-  {
-    id: '3',
-    name: 'Pull Day',
-    date: new Date(2026, 4, 18),
-    dayOfWeek: 'Sunday',
-    totalWeight: 4890,
-    duration: 58,
-    exercises: 7,
-    icon: 'arrow-up',
-  },
-  {
-    id: '4',
-    name: 'Upper Body',
-    date: new Date(2026, 4, 16),
-    dayOfWeek: 'Friday',
-    totalWeight: 5280,
-    duration: 65,
-    exercises: 8,
-    icon: 'dumbbell',
-  },
-  {
-    id: '5',
-    name: 'Lower Body',
-    date: new Date(2026, 4, 14),
-    dayOfWeek: 'Wednesday',
-    totalWeight: 9120,
-    duration: 70,
-    exercises: 6,
-    icon: 'footprints',
-  },
-])
+const workoutHistory = computed(() =>
+  workoutStore.history.map((session) => {
+    const routine = workoutStore.routines.find((r) => r.name === session.routineName)
+    return {
+      id: session.id,
+      name: session.routineName,
+      date: session.date,
+      dayOfWeek: session.date.toLocaleDateString('en-US', { weekday: 'long' }),
+      totalWeight: session.totalVolumeKg,
+      duration: session.durationMin,
+      exercises: routine?.exerciseCount ?? session.exercises.length,
+      icon: 'dumbbell',
+    }
+  }),
+)
 
 const handleStartWorkout = () => {
-  router.push('/workout')
-}
-
-const handleChooseRoutine = () => {
   router.push('/routines')
 }
 

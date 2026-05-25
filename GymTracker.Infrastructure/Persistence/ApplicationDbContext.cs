@@ -74,6 +74,40 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
 
             entity.HasQueryFilter(e => !e.IsDeleted);
+
+            entity.HasData(
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100001"), Name = "Bench Press", TargetMuscle = "Chest", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100002"), Name = "Incline Dumbbell Press", TargetMuscle = "Chest", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100003"), Name = "Decline Bench Press", TargetMuscle = "Chest", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100004"), Name = "Cable Fly", TargetMuscle = "Chest", IsDeleted = false, DeletedAt = null },
+
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100005"), Name = "Pull-Ups", TargetMuscle = "Back", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100006"), Name = "Lat Pulldown", TargetMuscle = "Back", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100007"), Name = "Barbell Row", TargetMuscle = "Back", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100008"), Name = "Seated Cable Row", TargetMuscle = "Back", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100009"), Name = "Face Pull", TargetMuscle = "Back", IsDeleted = false, DeletedAt = null },
+
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100010"), Name = "Back Squat", TargetMuscle = "Legs", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100011"), Name = "Leg Press", TargetMuscle = "Legs", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100012"), Name = "Romanian Deadlift", TargetMuscle = "Legs", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100013"), Name = "Leg Curl", TargetMuscle = "Legs", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100014"), Name = "Leg Extension", TargetMuscle = "Legs", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100015"), Name = "Hip Thrust", TargetMuscle = "Legs", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100016"), Name = "Calf Raises", TargetMuscle = "Legs", IsDeleted = false, DeletedAt = null },
+
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100017"), Name = "Overhead Press", TargetMuscle = "Shoulders", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100018"), Name = "Lateral Raise", TargetMuscle = "Shoulders", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100019"), Name = "Rear Delt Fly", TargetMuscle = "Shoulders", IsDeleted = false, DeletedAt = null },
+
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100020"), Name = "Barbell Curl", TargetMuscle = "Arms", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100021"), Name = "Hammer Curl", TargetMuscle = "Arms", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100022"), Name = "Tricep Pushdown", TargetMuscle = "Arms", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100023"), Name = "Skull Crusher", TargetMuscle = "Arms", IsDeleted = false, DeletedAt = null },
+
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100024"), Name = "Plank", TargetMuscle = "Core", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100025"), Name = "Hanging Leg Raise", TargetMuscle = "Core", IsDeleted = false, DeletedAt = null },
+                new Exercise { Id = Guid.Parse("a2d9f111-3d77-4b13-8f14-0a3e6f100026"), Name = "Cable Crunch", TargetMuscle = "Core", IsDeleted = false, DeletedAt = null }
+            );
         });
 
         // ── RoutineExercise (join table) ──────────────────────
