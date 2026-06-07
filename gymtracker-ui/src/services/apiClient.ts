@@ -42,7 +42,7 @@ function trimTrailingSlash(value: string): string {
 }
 
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim()
-const API_BASE_URL = trimTrailingSlash(configuredBaseUrl || 'http://localhost:5161/api')
+const API_BASE_URL = trimTrailingSlash(configuredBaseUrl || 'https://gymtracker-backend-4n8q.onrender.com/api')
 
 function buildUrl(path: string, query?: RequestOptions<never>['query']): string {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
