@@ -19,19 +19,27 @@ public sealed record RoutineDetailDto(
 public sealed class GetRoutineByIdQueryHandler : IRequestHandler<GetRoutineByIdQuery, RoutineDetailDto?>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetRoutineByIdQueryHandler(IApplicationDbContext context)
+    public GetRoutineByIdQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<RoutineDetailDto?> Handle(
         GetRoutineByIdQuery request,
         CancellationToken cancellationToken)
     {
+        var currentUserId = _currentUserService.UserId;
+        if (currentUserId is null)
+        {
+            return null;
+        }
+
         return await _context.Routines
             .AsNoTracking()
-            .Where(r => r.Id == request.Id)
+            .Where(r => r.Id == request.Id && r.UserId == currentUserId.Value)
             .Select(r => new RoutineDetailDto(
                 r.Id,
                 r.UserId,

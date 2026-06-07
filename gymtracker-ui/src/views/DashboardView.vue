@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { MOCK_AUTH_USER } from '@/constants/mockUser'
+import { useAuthStore } from '@/stores/auth'
 import { useWorkoutStore } from '@/stores/workout'
 import DashboardHeader from '@/components/DashboardHeader.vue'
 import QuickStats from '@/components/QuickStats.vue'
@@ -37,15 +37,28 @@ import WorkoutHistory from '@/components/WorkoutHistory.vue'
 import BottomNav from '@/components/BottomNav.vue'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const workoutStore = useWorkoutStore()
 
 onMounted(() => {
   if (workoutStore.activeSession) {
-    router.push('/workout')
+    void router.push('/workout')
+    return
   }
+
+  void workoutStore.loadRemoteData()
 })
 
-const userName = ref(MOCK_AUTH_USER.name)
+const userName = computed(() => {
+  const fullName = authStore.user?.user_metadata?.full_name
+
+  if (typeof fullName === 'string' && fullName.trim()) {
+    return fullName.trim()
+  }
+
+  const email = authStore.user?.email?.trim()
+  return email && email.length > 0 ? email : 'Athlete'
+})
 const currentStreak = ref(12)
 
 const weeklyStats = ref({

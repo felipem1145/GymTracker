@@ -24,18 +24,27 @@ public sealed class GetRoutinesQueryHandler
     : IRequestHandler<GetRoutinesQuery, IReadOnlyList<RoutineListItemDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetRoutinesQueryHandler(IApplicationDbContext context)
+    public GetRoutinesQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<IReadOnlyList<RoutineListItemDto>> Handle(
         GetRoutinesQuery request,
         CancellationToken cancellationToken)
     {
+        var currentUserId = _currentUserService.UserId;
+        if (currentUserId is null)
+        {
+            return [];
+        }
+
         return await _context.Routines
             .AsNoTracking()
+            .Where(r => r.UserId == currentUserId.Value)
             .OrderBy(r => r.Name)
             .Select(r => new RoutineListItemDto(
                 r.Id,

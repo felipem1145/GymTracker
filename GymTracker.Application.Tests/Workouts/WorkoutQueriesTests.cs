@@ -53,7 +53,7 @@ public sealed class WorkoutQueriesTests
         context.WorkoutLogs.Add(workout);
         await context.SaveChangesAsync();
 
-        var handler = new GetWorkoutByIdQueryHandler(context);
+        var handler = new GetWorkoutByIdQueryHandler(context, new TestCurrentUserService(user.Id));
         var result = await handler.Handle(new GetWorkoutByIdQuery { Id = workout.Id }, CancellationToken.None);
 
         Assert.NotNull(result);
@@ -93,7 +93,7 @@ public sealed class WorkoutQueriesTests
         context.WorkoutLogs.AddRange(oldWorkout, newWorkout);
         await context.SaveChangesAsync();
 
-        var handler = new GetWorkoutsQueryHandler(context);
+        var handler = new GetWorkoutsQueryHandler(context, new TestCurrentUserService(user.Id));
         var result = await handler.Handle(new GetWorkoutsQuery(), CancellationToken.None);
 
         Assert.Equal(2, result.Count);

@@ -1,12 +1,14 @@
 using GymTracker.Application.Users.Commands;
 using GymTracker.Application.Users.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymTracker.WebApi.Controllers;
 
 [ApiController]
 [Route("api/users")]
+[Authorize]
 public sealed class UsersController : ControllerBase
 {
     private readonly ISender _sender;

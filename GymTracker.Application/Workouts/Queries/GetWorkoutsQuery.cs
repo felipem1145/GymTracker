@@ -27,18 +27,27 @@ public sealed class GetWorkoutsQueryHandler
     : IRequestHandler<GetWorkoutsQuery, IReadOnlyList<WorkoutListItemDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetWorkoutsQueryHandler(IApplicationDbContext context)
+    public GetWorkoutsQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<IReadOnlyList<WorkoutListItemDto>> Handle(
         GetWorkoutsQuery request,
         CancellationToken cancellationToken)
     {
+        var currentUserId = _currentUserService.UserId;
+        if (currentUserId is null)
+        {
+            return [];
+        }
+
         return await _context.WorkoutLogs
             .AsNoTracking()
+            .Where(w => w.UserId == currentUserId.Value)
             .OrderByDescending(w => w.StartedAt)
             .Select(w => new WorkoutListItemDto(
                 w.Id,

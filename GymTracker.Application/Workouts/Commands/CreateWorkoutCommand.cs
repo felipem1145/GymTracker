@@ -1,13 +1,12 @@
 using GymTracker.Application.Common.Interfaces;
 using GymTracker.Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace GymTracker.Application.Workouts.Commands;
 
 public sealed class CreateWorkoutCommand : IRequest<Guid>
 {
-    public Guid UserId { get; init; }
-
     public Guid? RoutineId { get; init; }
 
     public IReadOnlyCollection<CreateWorkoutSetItem> Sets { get; init; } = [];
@@ -28,22 +27,45 @@ public sealed class CreateWorkoutCommandHandler
     : IRequestHandler<CreateWorkoutCommand, Guid>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateWorkoutCommandHandler(IApplicationDbContext context)
+    public CreateWorkoutCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<Guid> Handle(CreateWorkoutCommand command, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+        var userId = _currentUserService.UserId
+            ?? throw new UnauthorizedAccessException("Authenticated user id is required.");
+
+        var userExists = await _context.Users
+            .AnyAsync(u => u.Id == userId, cancellationToken);
+
+        if (!userExists)
+        {
+            throw new InvalidOperationException("User was not found.");
+        }
+
+        if (command.RoutineId.HasValue)
+        {
+            var routineExists = await _context.Routines
+                .AnyAsync(r => r.Id == command.RoutineId.Value && r.UserId == userId, cancellationToken);
+
+            if (!routineExists)
+            {
+                throw new InvalidOperationException("Routine was not found.");
+            }
+        }
 
         var workoutId = Guid.NewGuid();
 
         var workoutLog = new WorkoutLog
         {
             Id = workoutId,
-            UserId = command.UserId,
+            UserId = userId,
             RoutineId = command.RoutineId,
             StartedAt = DateTime.UtcNow,
             ExerciseSets = command.Sets

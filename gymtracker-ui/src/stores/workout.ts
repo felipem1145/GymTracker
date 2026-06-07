@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import { MOCK_AUTH_USER } from '@/constants/mockUser'
 import { ApiError } from '@/services/apiClient'
 import {
   createExercise as createExerciseRequest,
@@ -99,10 +98,6 @@ export interface CreateExercisePayload {
   muscleGroup: string
 }
 
-type StoredHistoricalSession = Omit<HistoricalSession, 'date'> & {
-  date: string
-}
-
 type StoredActiveSession = Omit<ActiveSession, 'startTime'> & {
   startTime: string
 }
@@ -125,13 +120,8 @@ export const useWorkoutStore = defineStore('workout', () => {
   const exercises = ref<Exercise[]>([])
   const isLoading = ref(false)
   const errorMessage = ref<string | null>(null)
-  const currentUserId = ref<string>(MOCK_AUTH_USER.id)
 
   // ── Parsers (restore Date objects lost during JSON serialization) ────────
-
-  function parseHistoricalSession(raw: StoredHistoricalSession): HistoricalSession {
-    return { ...raw, date: new Date(raw.date) }
-  }
 
   function parseActiveSession(raw: StoredActiveSession | LegacyStoredActiveSession): ActiveSession {
     const startTime = new Date(raw.startTime)
@@ -149,8 +139,7 @@ export const useWorkoutStore = defineStore('workout', () => {
     }
   }
 
-  const storedHistory = JSON.parse(localStorage.getItem('gym_history') ?? '[]') as StoredHistoricalSession[]
-  const history = ref<HistoricalSession[]>(storedHistory.map(parseHistoricalSession))
+  const history = ref<HistoricalSession[]>([])
 
   const storedSession = JSON.parse(localStorage.getItem('gym_active_session') ?? 'null') as
     | StoredActiveSession
@@ -360,10 +349,6 @@ export const useWorkoutStore = defineStore('workout', () => {
     })
   }
 
-  async function ensureCurrentUserId(): Promise<string> {
-    return currentUserId.value
-  }
-
   // ── Actions ────────────────────────────────────────────────────────────────
 
   async function loadExercises(): Promise<void> {
@@ -437,7 +422,6 @@ export const useWorkoutStore = defineStore('workout', () => {
     clearErrorState()
 
     try {
-      const userId = await ensureCurrentUserId()
       const name = payload.name.trim()
 
       if (!name) {
@@ -445,7 +429,6 @@ export const useWorkoutStore = defineStore('workout', () => {
       }
 
       const routineId = await createRoutineRequest({
-        userId,
         name,
         exerciseIds: payload.exerciseIds,
       })
@@ -465,7 +448,6 @@ export const useWorkoutStore = defineStore('workout', () => {
     clearErrorState()
 
     try {
-      const userId = await ensureCurrentUserId()
       const name = payload.name.trim()
       const targetMuscle = payload.muscleGroup.trim()
 
@@ -480,7 +462,6 @@ export const useWorkoutStore = defineStore('workout', () => {
       const exerciseId = await createExerciseRequest({
         name,
         targetMuscle,
-        userId,
       })
 
       await loadExercises()
@@ -563,7 +544,6 @@ export const useWorkoutStore = defineStore('workout', () => {
 
     try {
       const sessionSnapshot = activeSession.value
-      const userId = await ensureCurrentUserId()
 
       const completedExercises: CompletedExercise[] = sessionSnapshot.exercises
         .map((exercise) => {
@@ -600,7 +580,6 @@ export const useWorkoutStore = defineStore('workout', () => {
       }
 
       const createdId = await createWorkout({
-        userId,
         routineId: sessionSnapshot.routineId,
         sets: payloadSets,
       })
@@ -636,14 +615,6 @@ export const useWorkoutStore = defineStore('workout', () => {
   // ── Persistence watches ────────────────────────────────────────────────────
 
   watch(
-    history,
-    (val) => {
-      localStorage.setItem('gym_history', JSON.stringify(val))
-    },
-    { deep: true },
-  )
-
-  watch(
     activeSession,
     (val) => {
       if (val === null) {
@@ -654,8 +625,6 @@ export const useWorkoutStore = defineStore('workout', () => {
     },
     { deep: true },
   )
-
-  localStorage.setItem('gym_user_id', currentUserId.value)
 
   void loadRemoteData()
 

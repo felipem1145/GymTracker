@@ -1,12 +1,14 @@
 using GymTracker.Application.Exercises.Commands;
 using GymTracker.Application.Exercises.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymTracker.WebApi.Controllers;
 
 [ApiController]
 [Route("api/exercises")]
+[Authorize]
 public sealed class ExercisesController : ControllerBase
 {
     private readonly ISender _sender;
@@ -17,6 +19,7 @@ public sealed class ExercisesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<IReadOnlyList<ExerciseListItemDto>>> Get(CancellationToken cancellationToken)
     {
         var exercises = await _sender.Send(new GetExercisesQuery(), cancellationToken);
@@ -24,6 +27,7 @@ public sealed class ExercisesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [AllowAnonymous]
     public async Task<ActionResult<ExerciseDetailDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var exercise = await _sender.Send(new GetExerciseByIdQuery { Id = id }, cancellationToken);

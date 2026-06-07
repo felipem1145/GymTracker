@@ -1,3 +1,5 @@
+import { useAuthStore } from '@/stores/auth'
+
 export interface ValidationErrors {
   [field: string]: string[]
 }
@@ -110,12 +112,15 @@ async function request<TResponse, TBody = never>(
 ): Promise<TResponse> {
   const { method = 'GET', body, headers, signal, query } = options
   const url = buildUrl(path, query)
+  const authStore = useAuthStore()
+  const accessToken = authStore.accessToken
 
   const response = await fetch(url, {
     method,
     headers: {
       Accept: 'application/json',
       ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...headers,
     },
     body: body === undefined ? undefined : JSON.stringify(body),

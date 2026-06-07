@@ -9,8 +9,6 @@ public sealed class UpdateWorkoutCommand : IRequest<bool>
 {
     public Guid Id { get; init; }
 
-    public Guid UserId { get; init; }
-
     public Guid? RoutineId { get; init; }
 
     public IReadOnlyCollection<UpdateWorkoutSetItem> Sets { get; init; } = [];
@@ -30,37 +28,33 @@ public sealed class UpdateWorkoutSetItem
 public sealed class UpdateWorkoutCommandHandler : IRequestHandler<UpdateWorkoutCommand, bool>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateWorkoutCommandHandler(IApplicationDbContext context)
+    public UpdateWorkoutCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<bool> Handle(UpdateWorkoutCommand command, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+        var userId = _currentUserService.UserId
+            ?? throw new UnauthorizedAccessException("Authenticated user id is required.");
 
         var workout = await _context.WorkoutLogs
             .Include(w => w.ExerciseSets)
-            .FirstOrDefaultAsync(w => w.Id == command.Id, cancellationToken);
+            .FirstOrDefaultAsync(w => w.Id == command.Id && w.UserId == userId, cancellationToken);
 
         if (workout is null)
         {
             return false;
         }
 
-        var userExists = await _context.Users
-            .AnyAsync(u => u.Id == command.UserId, cancellationToken);
-
-        if (!userExists)
-        {
-            throw new InvalidOperationException("User was not found.");
-        }
-
         if (command.RoutineId.HasValue)
         {
             var routineExists = await _context.Routines
-                .AnyAsync(r => r.Id == command.RoutineId.Value, cancellationToken);
+                .AnyAsync(r => r.Id == command.RoutineId.Value && r.UserId == userId, cancellationToken);
 
             if (!routineExists)
             {
@@ -84,7 +78,6 @@ public sealed class UpdateWorkoutCommandHandler : IRequestHandler<UpdateWorkoutC
             }
         }
 
-        workout.UserId = command.UserId;
         workout.RoutineId = command.RoutineId;
 
         if (workout.ExerciseSets.Count > 0)

@@ -8,15 +8,36 @@
         <Dumbbell class="relative z-10 w-8 h-8 text-[#22c55e]" :stroke-width="2" />
       </div>
       <div class="text-center">
-        <h1 class="text-3xl font-bold text-[#fafafa] tracking-tight">Let's Train</h1>
+        <h1 class="text-3xl font-bold text-[#fafafa] tracking-tight">Create your account</h1>
         <p class="mt-1.5 text-sm text-[#a1a1aa] leading-relaxed">
-          Log in to track your progressive<br>overload and routines.
+          Sign up to track your progressive<br>overload and routines.
         </p>
       </div>
     </div>
 
     <!-- Card -->
     <div class="w-full max-w-sm flex flex-col gap-4">
+
+      <!-- Full name field -->
+      <div class="flex flex-col gap-1.5">
+        <label for="name" class="text-xs font-medium text-[#a1a1aa] uppercase tracking-widest">Full Name</label>
+        <div
+          class="flex items-center gap-3 px-4 h-14 rounded-xl bg-[#18181b] border transition-colors duration-150"
+          :class="focusedField === 'name' ? 'border-[#22c55e]' : 'border-[#27272a]'"
+        >
+          <User class="w-4 h-4 shrink-0 text-[#a1a1aa]" :stroke-width="2" />
+          <input
+            id="name"
+            v-model="name"
+            type="text"
+            placeholder="John Doe"
+            autocomplete="name"
+            class="flex-1 bg-transparent text-[#fafafa] text-[15px] placeholder:text-[#52525b] outline-none"
+            @focus="focusedField = 'name'"
+            @blur="focusedField = null"
+          />
+        </div>
+      </div>
 
       <!-- Email field -->
       <div class="flex flex-col gap-1.5">
@@ -52,7 +73,7 @@
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
             placeholder="••••••••"
-            autocomplete="current-password"
+            autocomplete="new-password"
             class="flex-1 bg-transparent text-[#fafafa] text-[15px] placeholder:text-[#52525b] outline-none"
             @focus="focusedField = 'password'"
             @blur="focusedField = null"
@@ -69,17 +90,37 @@
         </div>
       </div>
 
-      <!-- Forgot password -->
-      <div class="flex justify-end -mt-1">
-        <button
-          type="button"
-          class="text-xs text-[#a1a1aa] hover:text-[#22c55e] transition-colors duration-150 focus:outline-none"
+      <!-- Confirm password field -->
+      <div class="flex flex-col gap-1.5">
+        <label for="confirm-password" class="text-xs font-medium text-[#a1a1aa] uppercase tracking-widest">Confirm Password</label>
+        <div
+          class="flex items-center gap-3 px-4 h-14 rounded-xl bg-[#18181b] border transition-colors duration-150"
+          :class="focusedField === 'confirmPassword' ? 'border-[#22c55e]' : 'border-[#27272a]'"
         >
-          Forgot password?
-        </button>
+          <Lock class="w-4 h-4 shrink-0 text-[#a1a1aa]" :stroke-width="2" />
+          <input
+            id="confirm-password"
+            v-model="confirmPassword"
+            :type="showConfirmPassword ? 'text' : 'password'"
+            placeholder="••••••••"
+            autocomplete="new-password"
+            class="flex-1 bg-transparent text-[#fafafa] text-[15px] placeholder:text-[#52525b] outline-none"
+            @focus="focusedField = 'confirmPassword'"
+            @blur="focusedField = null"
+          />
+          <button
+            type="button"
+            class="shrink-0 text-[#52525b] hover:text-[#a1a1aa] transition-colors duration-150 focus:outline-none"
+            :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'"
+            @click="showConfirmPassword = !showConfirmPassword"
+          >
+            <Eye v-if="!showConfirmPassword" class="w-4 h-4" :stroke-width="2" />
+            <EyeOff v-else class="w-4 h-4" :stroke-width="2" />
+          </button>
+        </div>
       </div>
 
-      <!-- Sign in button -->
+      <!-- Sign up button -->
       <button
         type="button"
         class="mt-1 w-full h-14 rounded-xl bg-[#22c55e] text-[#0a0a0a] font-bold text-[15px] tracking-wide
@@ -88,10 +129,10 @@
                transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#22c55e]/50"
         :class="{ 'opacity-60 cursor-not-allowed': isLoading }"
         :disabled="isLoading"
-        @click="handleLogin"
+        @click="handleSignUp"
       >
         <Loader2 v-if="isLoading" class="w-5 h-5 animate-spin" :stroke-width="2.5" />
-        <span v-else>Sign In</span>
+        <span v-else>Create Account</span>
       </button>
 
       <!-- Error message -->
@@ -107,14 +148,14 @@
 
     </div>
 
-    <!-- Sign up link -->
+    <!-- Sign in link -->
     <p class="mt-10 text-sm text-[#a1a1aa]">
-      Don&apos;t have an account?
+      Already have an account?
       <RouterLink
-        to="/signup"
+        to="/login"
         class="text-[#22c55e] font-semibold hover:text-[#16a34a] transition-colors duration-150"
       >
-        Sign up
+        Sign in
       </RouterLink>
     </p>
 
@@ -124,37 +165,51 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { Dumbbell, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-vue-next'
+import { Dumbbell, User, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-vue-next'
 import { supabase } from '@/services/supabaseClient'
 import { useAuthStore } from '@/stores/auth'
 
 onMounted(() => {
-  document.title = 'Sign In — GymTracker'
+  document.title = 'Sign Up — GymTracker'
 })
 
-const email = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const isLoading = ref(false)
-const errorMessage = ref('')
-const focusedField = ref<'email' | 'password' | null>(null)
 const router = useRouter()
 const authStore = useAuthStore()
 
-async function handleLogin() {
+const name = ref('')
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+const isLoading = ref(false)
+const errorMessage = ref('')
+const focusedField = ref<'name' | 'email' | 'password' | 'confirmPassword' | null>(null)
+
+async function handleSignUp() {
   errorMessage.value = ''
 
-  if (!email.value || !password.value) {
-    errorMessage.value = 'Please enter your email and password.'
+  if (!name.value || !email.value || !password.value || !confirmPassword.value) {
+    errorMessage.value = 'Please complete all fields.'
+    return
+  }
+
+  if (password.value !== confirmPassword.value) {
+    errorMessage.value = 'Passwords do not match'
     return
   }
 
   isLoading.value = true
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
+      options: {
+        data: {
+          full_name: name.value,
+        },
+      },
     })
 
     if (error) {
@@ -169,7 +224,7 @@ async function handleLogin() {
 
     await router.push('/')
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unexpected error while signing in.'
+    errorMessage.value = error instanceof Error ? error.message : 'Unexpected error while signing up.'
   } finally {
     isLoading.value = false
   }
@@ -181,6 +236,7 @@ async function handleLogin() {
 .slide-fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
+
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   opacity: 0;

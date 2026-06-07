@@ -45,7 +45,7 @@ public sealed class RoutineQueriesTests
         context.Routines.Add(routine);
         await context.SaveChangesAsync();
 
-        var handler = new GetRoutineByIdQueryHandler(context);
+        var handler = new GetRoutineByIdQueryHandler(context, new TestCurrentUserService(user.Id));
 
         var result = await handler.Handle(new GetRoutineByIdQuery { Id = routine.Id }, CancellationToken.None);
 
@@ -89,7 +89,7 @@ public sealed class RoutineQueriesTests
         context.Routines.Add(routine);
         await context.SaveChangesAsync();
 
-        var handler = new GetRoutinesQueryHandler(context);
+        var handler = new GetRoutinesQueryHandler(context, new TestCurrentUserService(user.Id));
         var result = await handler.Handle(new GetRoutinesQuery(), CancellationToken.None);
 
         Assert.Single(result);

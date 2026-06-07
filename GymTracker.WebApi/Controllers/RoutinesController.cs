@@ -1,12 +1,14 @@
 using GymTracker.Application.Routines.Commands;
 using GymTracker.Application.Routines.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymTracker.WebApi.Controllers;
 
 [ApiController]
 [Route("api/routines")]
+[Authorize]
 public sealed class RoutinesController : ControllerBase
 {
     private readonly ISender _sender;
@@ -49,7 +51,6 @@ public sealed class RoutinesController : ControllerBase
         var updated = await _sender.Send(new UpdateRoutineCommand
         {
             Id = id,
-            UserId = command.UserId,
             Name = command.Name,
             ExerciseIds = command.ExerciseIds
         }, cancellationToken);

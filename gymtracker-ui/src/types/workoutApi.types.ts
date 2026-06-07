@@ -31,7 +31,6 @@ export interface CreateWorkoutSetItemDto {
 }
 
 export interface CreateWorkoutCommandDto {
-  userId: string
   routineId: string | null
   sets: CreateWorkoutSetItemDto[]
 }
@@ -44,7 +43,6 @@ export interface UpdateWorkoutSetItemDto {
 }
 
 export interface UpdateWorkoutCommandDto {
-  userId: string
   routineId: string | null
   sets: UpdateWorkoutSetItemDto[]
 }
@@ -72,13 +70,11 @@ export interface RoutineDetailDto {
 }
 
 export interface CreateRoutineCommandDto {
-  userId: string
   name: string
   exerciseIds: string[]
 }
 
 export interface UpdateRoutineCommandDto {
-  userId: string
   name: string
   exerciseIds: string[]
 }
@@ -98,7 +94,6 @@ export interface ExerciseDetailDto {
 export interface CreateExerciseCommandDto {
   name: string
   targetMuscle: string
-  userId: string
 }
 
 export interface UserListItemDto {

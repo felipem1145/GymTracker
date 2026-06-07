@@ -7,8 +7,6 @@ namespace GymTracker.Application.Routines.Commands;
 
 public sealed class CreateRoutineCommand : IRequest<Guid>
 {
-    public Guid UserId { get; init; }
-
     public string Name { get; init; } = string.Empty;
 
     public IReadOnlyCollection<Guid> ExerciseIds { get; init; } = [];
@@ -17,15 +15,19 @@ public sealed class CreateRoutineCommand : IRequest<Guid>
 public sealed class CreateRoutineCommandHandler : IRequestHandler<CreateRoutineCommand, Guid>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CreateRoutineCommandHandler(IApplicationDbContext context)
+    public CreateRoutineCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<Guid> Handle(CreateRoutineCommand command, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+        var userId = _currentUserService.UserId
+            ?? throw new UnauthorizedAccessException("Authenticated user id is required.");
 
         if (string.IsNullOrWhiteSpace(command.Name))
         {
@@ -33,7 +35,7 @@ public sealed class CreateRoutineCommandHandler : IRequestHandler<CreateRoutineC
         }
 
         var userExists = await _context.Users
-            .AnyAsync(u => u.Id == command.UserId, cancellationToken);
+            .AnyAsync(u => u.Id == userId, cancellationToken);
 
         if (!userExists)
         {
@@ -61,7 +63,7 @@ public sealed class CreateRoutineCommandHandler : IRequestHandler<CreateRoutineC
         var routine = new Routine
         {
             Id = routineId,
-            UserId = command.UserId,
+            UserId = userId,
             Name = command.Name.Trim(),
             CreatedAt = DateTime.UtcNow,
             IsDeleted = false,

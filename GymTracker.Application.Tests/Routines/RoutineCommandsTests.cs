@@ -32,11 +32,10 @@ public sealed class RoutineCommandsTests
         context.Exercises.Add(existingExercise);
         await context.SaveChangesAsync();
 
-        var handler = new CreateRoutineCommandHandler(context);
+        var handler = new CreateRoutineCommandHandler(context, new TestCurrentUserService(user.Id));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => handler.Handle(new CreateRoutineCommand
         {
-            UserId = user.Id,
             Name = "Leg Day",
             ExerciseIds = [existingExercise.Id, Guid.NewGuid()]
         }));
@@ -79,12 +78,11 @@ public sealed class RoutineCommandsTests
         context.Routines.Add(routine);
         await context.SaveChangesAsync();
 
-        var handler = new UpdateRoutineCommandHandler(context);
+        var handler = new UpdateRoutineCommandHandler(context, new TestCurrentUserService(user.Id));
 
         var updated = await handler.Handle(new UpdateRoutineCommand
         {
             Id = routine.Id,
-            UserId = user.Id,
             Name = "Updated",
             ExerciseIds = [exercise2.Id, exercise3.Id]
         });

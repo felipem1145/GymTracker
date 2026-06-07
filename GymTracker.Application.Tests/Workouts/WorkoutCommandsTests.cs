@@ -22,12 +22,11 @@ public sealed class WorkoutCommandsTests
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-        var handler = new UpdateWorkoutCommandHandler(context);
+        var handler = new UpdateWorkoutCommandHandler(context, new TestCurrentUserService(user.Id));
 
         var result = await handler.Handle(new UpdateWorkoutCommand
         {
             Id = Guid.NewGuid(),
-            UserId = user.Id,
             Sets = []
         });
 

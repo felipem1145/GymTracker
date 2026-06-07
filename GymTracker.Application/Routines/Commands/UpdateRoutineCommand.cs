@@ -9,8 +9,6 @@ public sealed class UpdateRoutineCommand : IRequest<bool>
 {
     public Guid Id { get; init; }
 
-    public Guid UserId { get; init; }
-
     public string Name { get; init; } = string.Empty;
 
     public IReadOnlyCollection<Guid> ExerciseIds { get; init; } = [];
@@ -19,15 +17,19 @@ public sealed class UpdateRoutineCommand : IRequest<bool>
 public sealed class UpdateRoutineCommandHandler : IRequestHandler<UpdateRoutineCommand, bool>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UpdateRoutineCommandHandler(IApplicationDbContext context)
+    public UpdateRoutineCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<bool> Handle(UpdateRoutineCommand command, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+        var userId = _currentUserService.UserId
+            ?? throw new UnauthorizedAccessException("Authenticated user id is required.");
 
         if (string.IsNullOrWhiteSpace(command.Name))
         {
@@ -37,19 +39,11 @@ public sealed class UpdateRoutineCommandHandler : IRequestHandler<UpdateRoutineC
         var routine = await _context.Routines
             .IgnoreQueryFilters()
             .Include(r => r.RoutineExercises)
-            .FirstOrDefaultAsync(r => r.Id == command.Id, cancellationToken);
+            .FirstOrDefaultAsync(r => r.Id == command.Id && r.UserId == userId, cancellationToken);
 
         if (routine is null || routine.IsDeleted)
         {
             return false;
-        }
-
-        var userExists = await _context.Users
-            .AnyAsync(u => u.Id == command.UserId, cancellationToken);
-
-        if (!userExists)
-        {
-            throw new InvalidOperationException("User was not found.");
         }
 
         var normalizedExerciseIds = command.ExerciseIds.Distinct().ToList();
@@ -69,7 +63,6 @@ public sealed class UpdateRoutineCommandHandler : IRequestHandler<UpdateRoutineC
             }
         }
 
-        routine.UserId = command.UserId;
         routine.Name = command.Name.Trim();
 
         // Synchronize join rows: remove missing, add new, and re-sequence by input order.

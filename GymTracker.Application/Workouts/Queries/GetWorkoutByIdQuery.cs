@@ -19,19 +19,27 @@ public sealed record WorkoutDetailDto(
 public sealed class GetWorkoutByIdQueryHandler : IRequestHandler<GetWorkoutByIdQuery, WorkoutDetailDto?>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetWorkoutByIdQueryHandler(IApplicationDbContext context)
+    public GetWorkoutByIdQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<WorkoutDetailDto?> Handle(
         GetWorkoutByIdQuery request,
         CancellationToken cancellationToken)
     {
+        var currentUserId = _currentUserService.UserId;
+        if (currentUserId is null)
+        {
+            return null;
+        }
+
         return await _context.WorkoutLogs
             .AsNoTracking()
-            .Where(w => w.Id == request.Id)
+            .Where(w => w.Id == request.Id && w.UserId == currentUserId.Value)
             .Select(w => new WorkoutDetailDto(
                 w.Id,
                 w.UserId,
